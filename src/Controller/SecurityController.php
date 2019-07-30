@@ -103,10 +103,18 @@ class SecurityController extends AbstractController
         }
         $Statut=$values->Statut;
         if($Statut=="DEBLOQUER"){
-            $roles=["ROLE_BLOQUE"];
+            $roles=["ROLE_BLOQUE"];    
         }
         else{
-            $roles=$user->getStatut();
+            if($user->getProfile()=="user"){
+                $roles=["ROLE_USER"];
+            }
+            else if($user->getProfile()=="admin"){
+                $roles=["ROLE_ADMIN"];
+            }
+            else if($user->getProfile()=="superAdmin"){
+                $roles=["ROLE_SUPER_ADMIN"];
+            }
         }
         $user->setRoles($roles);
         $errors = $validator->validate($userUpdate);
