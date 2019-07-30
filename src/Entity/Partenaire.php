@@ -35,10 +35,7 @@ class Partenaire
      */
     private $Email;
 
-    /**
-     * @ORM\Column(type="integer")
-     */
-    private $NumCompteBancaire;
+   
 
     /**
      * @ORM\Column(type="integer")
@@ -124,17 +121,6 @@ class Partenaire
         return $this;
     }
 
-    public function getNumCompteBancaire(): ?int
-    {
-        return $this->NumCompteBancaire;
-    }
-
-    public function setNumCompteBancaire(int $NumCompteBancaire): self
-    {
-        $this->NumCompteBancaire = $NumCompteBancaire;
-
-        return $this;
-    }
 
     public function getNinea(): ?int
     {

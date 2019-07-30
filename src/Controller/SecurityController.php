@@ -12,6 +12,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 
 
     /**
@@ -21,6 +22,7 @@ class SecurityController extends AbstractController
 {
     /**
      * @Route("/register", name="register", methods={"POST"})
+     * @IsGranted("ROLE_SUPER_ADMIN")
      */
     public function register(Request $request, UserPasswordEncoderInterface $passwordEncoder, EntityManagerInterface $entityManager, SerializerInterface $serializer, ValidatorInterface $validator)
     {
@@ -30,9 +32,10 @@ class SecurityController extends AbstractController
             $user->setEmail($values->email);
             $user->setPassword($passwordEncoder->encodePassword($user, $values->password));
             $user->setProfile($values->Profile);
+            $user->setStatut("BLOQUER");
             $Profile=$values->Profile;
             $roles=[];
-            if($Profile=="user"){
+            if($Profile=="user" ){
                 $roles=["ROLE_USER"];
             }
             else if($Profile=="admin"){
@@ -43,6 +46,7 @@ class SecurityController extends AbstractController
             }
         
             $user->setRoles($roles);
+            $user->setStatut($values->Statut);
             $errors = $validator->validate($user);
             if(count($errors)) {
                 $errors = $serializer->serialize($errors, 'json');
@@ -80,4 +84,49 @@ class SecurityController extends AbstractController
         ]);
     }
 
+    /**
+     * @Route("/bloquer/{id}", name="bloquer" , methods={"POST"})
+     * @IsGranted("ROLE_SUPER_ADMIN")
+     */
+    public function bloquer(Request $request,User $user,UserPasswordEncoderInterface $passwordEncoder, EntityManagerInterface $entityManager, SerializerInterface $serializer, ValidatorInterface $validator)
+    {
+        $userUpdate=$entityManager->getRepository(User::class)->find($user->getId());
+        $values = json_decode($request->getContent());
+        $user->getEmail($values->email);
+        $user->getPassword();
+        $user->getProfile();
+        if($user->getStatut()=="BLOQUER"){
+            $userUpdate->setStatut("DEBLOQUER");
+        }
+        else{
+            $userUpdate->setStatut("BLOQUER");
+        }
+        $Statut=$values->Statut;
+        if($Statut=="DEBLOQUER"){
+            $roles=["ROLE_BLOQUE"];
+        }
+        else{
+            $roles=$user->getStatut();
+        }
+        $user->setRoles($roles);
+        $errors = $validator->validate($userUpdate);
+            if(count($errors)) {
+                $errors = $serializer->serialize($errors, 'json');
+                return new Response($errors, 500, [
+                    'Content-Type' => 'application/json'
+                ]);
+            }
+            
+            $entityManager->flush();
+
+            $data = [
+                'status' => 201,
+                'message' => 'L\'utilisateur a été mis a jour'
+            ];
+
+            return new JsonResponse($data, 201);
+
+    }
+
+    
 }

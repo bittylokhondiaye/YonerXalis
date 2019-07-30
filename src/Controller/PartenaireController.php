@@ -6,12 +6,14 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
 use App\Entity\Partenaire;
+use App\Entity\Compte;
 use App\Entity\UserPartenaire;
 use App\Repository\PartenaireRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Serializer\SerializerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
+
 
 /**
  * @Route("/api")
@@ -80,5 +82,21 @@ class PartenaireController extends AbstractController
         return new JsonResponse($data, 201);
     }
 
+
+    /**
+     * @Route("/api/compte" , name="addCompte", methods={"POST"})
+     * @IsGranted("ROLE_SUPER_ADMIN")
+     */
+    public function addCompte(Request $request, SerializerInterface $serializer,EntityManagerInterface $entityManager)
+    {
+        $Compte = $serializer->deserialize($request->getContent(), Compte::class, 'json');
+        $entityManager->persist($Compte);
+        $entityManager->flush();
+        $data = [
+            'status' => 201,
+            'message' => 'Le compte a bien été ajouté'
+        ];
+        return new JsonResponse($data, 201);
+    }
 
 }

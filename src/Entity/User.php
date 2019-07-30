@@ -39,6 +39,11 @@ class User implements UserInterface
      */
     private $Profile;
 
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
+    private $Statut;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -125,6 +130,18 @@ class User implements UserInterface
     public function setProfile(string $Profile): self
     {
         $this->Profile = $Profile;
+
+        return $this;
+    }
+
+    public function getStatut(): ?string
+    {
+        return $this->Statut;
+    }
+
+    public function setStatut(string $Statut): self
+    {
+        $this->Statut = $Statut;
 
         return $this;
     }

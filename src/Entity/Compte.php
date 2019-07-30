@@ -36,10 +36,7 @@ class Compte
      */
     private $Montant;
 
-    /**
-     * @ORM\Column(type="integer")
-     */
-    private $CNIproprietaire;
+    
 
     /**
      * @ORM\OneToOne(targetEntity="App\Entity\Partenaire", inversedBy="compte", cascade={"persist", "remove"})
@@ -100,17 +97,7 @@ class Compte
         return $this;
     }
 
-    public function getCNIproprietaire(): ?int
-    {
-        return $this->CNIproprietaire;
-    }
-
-    public function setCNIproprietaire(int $CNIproprietaire): self
-    {
-        $this->CNIproprietaire = $CNIproprietaire;
-
-        return $this;
-    }
+    
 
     public function getPartenaire(): ?Partenaire
     {
